@@ -1,0 +1,353 @@
+﻿#bfs
+from collections import deque
+
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+
+
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            print(vertex, end=" ")
+            visited.add(vertex)
+            queue.extend([node for node in graph[vertex] if node not in visited])
+
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [], 'E': ['F'],
+    'F': []
+}
+bfs(graph, 'A')
+
+-----
+
+#dfs
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start, end=" ")
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [], 'E': ['F'],
+    'F': []
+}
+dfs(graph, 'A')
+
+
+-----
+
+
+#8 queens
+N=8
+
+
+def  solveNQueens(board, col):
+ if col == N:
+   print(board)
+   return True
+ 
+ for i in range(N):
+   if isSafe(board, i, col):
+       board[i][col] = 1
+       if solveNQueens(board, col + 1):
+           return True
+       board[i][col] = 0  # Backtrack
+ 
+ return False
+ 
+def isSafe(board, row, col):
+ # Check left side of the row
+   for x in range(col):
+       if board[row][x] == 1:
+           return False
+   
+   # Check upper-left diagonal
+   for x, y in zip(range(row, -1, -1), range(col, -1, -1)):
+       if board[x][y] == 1:
+           return False
+ 
+   # Check lower-left diagonal
+   for x, y in zip(range(row, N, 1), range(col, -1, -1)):
+       if board[x][y] == 1:
+           return False
+   return True
+ 
+ 
+board = [[0 for x in range(N)] for y in range(N)]
+if not solveNQueens(board, 0):
+   print("No solution found")
+
+
+
+
+—--
+
+# tokenization, eliminate stopwords and perform stemming using nltk.
+
+
+%pip install nltk
+%pip install pandas
+import nltk
+nltk.download('punkt_tab')
+
+
+import nltk
+import pandas as pd
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('stopwords')
+
+
+# Create our text processing function
+def process_text(text):
+    # Tokenization
+    tokens = word_tokenize(text.lower())
+    
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word.isalpha() and word not in stop_words]
+    
+    # Stemming
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(word) for word in filtered_tokens]
+    
+    return tokens, filtered_tokens, stemmed_tokens
+
+
+# CHOOSE ONE OF THESE OPTIONS TO LOAD YOUR DATA:
+
+
+# OPTION 1: For CSV files (uncomment the lines below)
+# df = pd.read_csv('your_dataset.csv')
+# texts = df['text'].tolist()  # Change 'text' to your column name
+
+
+# OPTION 2: For Excel files (uncomment the lines below)
+# df = pd.read_excel('your_dataset.xlsx')
+# texts = df['text'].tolist()  # Change 'text' to your column name
+
+
+# OPTION 3: For text files (uncomment the lines below)
+# with open('your_dataset.txt', 'r', encoding='utf-8') as file:
+#     texts = [file.read()]
+
+
+# OPTION 4: For paragraphs directly (uncomment the lines below)
+texts = [
+    "This is a sample paragraph. It contains several sentences with different words.",
+    "Natural language processing is a field of artificial intelligence."
+]
+
+
+# Process each text
+for i, text in enumerate(texts):
+    print(f"\nDocument {i+1}:")
+    
+    # Process the text
+    tokens, filtered_tokens, stemmed_tokens = process_text(text)
+    
+    # Print results
+    print("Original text:", text[:50] + "..." if len(text) > 50 else text)
+    print("Tokens (first 10):", tokens[:10])
+    print("After removing stopwords (first 10):", filtered_tokens[:10])
+    print("After stemming (first 10):", stemmed_tokens[:10])
+
+
+
+
+—----
+
+
+# TF-IDF
+
+
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+documents = [
+    "AI is the future of technology.",
+    "Machine learning is a part of AI.",
+    "Deep learning improves machine learning techniques.",
+    "AI and machine learning are trending topics."
+]
+
+
+# 3. Create TF-IDF Vectorizer
+vectorizer = TfidfVectorizer()
+
+
+# 4. Fit and transform data
+tfidf_matrix = vectorizer.fit_transform(documents)
+
+
+print("TF-IDF Feature Names:\n", vectorizer.get_feature_names_out())
+print("\nTF-IDF Matrix (Array):\n", tfidf_matrix.toarray())
+
+
+
+
+—---
+
+
+# Perform Feature extraction and analysis techniques on processed text.
+
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+
+documents = [
+    "Data science includes AI and machine learning.",
+    "Machine learning is widely used in data science.",
+    "AI applications are growing every day."
+]
+
+
+# 3. Initialize CountVectorizer (Bag-of-Words)
+vectorizer = CountVectorizer()
+
+
+# 4. Fit and transform
+X = vectorizer.fit_transform(documents)
+
+
+# 5. Display results
+print("Feature Names (Vocabulary):\n", vectorizer.get_feature_names_out())
+print("\nDocument-Term Matrix:\n", X.toarray())
+
+
+
+
+—----
+
+
+# NLP analysis
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+
+
+# 2. Sample text data and labels (1 = positive, 0 = negative)
+texts = [
+    "I love this product",
+    "This is the best experience I've had",
+    "I hate this",
+    "Not good at all",
+    "Amazing performance and value",
+    "Terrible, would not recommend"
+]
+labels = [1, 1, 0, 0, 1, 0]
+
+
+# 3. Vectorize the text
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(texts)
+
+
+# 4. Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.3, random_state=42)
+
+
+# 5. Train model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+
+# 6. Evaluate
+accuracy = model.score(X_test, y_test)
+
+
+print("Vocabulary:\n", vectorizer.get_feature_names_out())
+print("\nAccuracy on test set:", accuracy)
+
+
+
+
+—-----
+
+
+
+
+# Tic Tac Toe in Python
+
+
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+
+
+def check_winner(board, player):
+    # Check rows
+    for row in board:
+        if all(cell == player for cell in row):
+            return True
+    # Check columns
+    for col in range(3):
+        if all(board[row][col] == player for row in range(3)):
+            return True
+    # Check diagonals
+    if all(board[i][i] == player for i in range(3)) or \
+       all(board[i][2 - i] == player for i in range(3)):
+        return True
+    return False
+
+
+def is_draw(board):
+    return all(cell in ["X", "O"] for row in board for cell in row)
+
+
+def play_game():
+    board = [[" " for _ in range(3)] for _ in range(3)]
+    current_player = "1X"
+
+
+    while True:
+        print_board(board)
+        print(f"Player {current_player}'s turn")
+        try:
+            row = int(input("Enter row (0-2): "))
+            col = int(input("Enter column (0-2): "))
+        except ValueError:
+            print("Please enter valid numbers!")
+            continue
+
+
+        if 0 <= row < 3 and 0 <= col < 3:
+            if board[row][col] == " ":
+                board[row][col] = current_player
+                if check_winner(board, current_player):
+                    print_board(board)
+                    print(f"Player {current_player} wins!")
+                    break
+                elif is_draw(board):
+                    print_board(board)
+                    print("It's a draw!")
+                    break
+                current_player = "O" if current_player == "X" else "X"
+            else:
+                print("That cell is already taken!")
+        else:
+            print("Invalid position! Try again.")
+
+
+play_game()
